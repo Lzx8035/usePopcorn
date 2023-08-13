@@ -1,4 +1,6 @@
 import { useState } from "react";
+//nowadays people use Typescript instead of proptype
+import PropTypes from "prop-types";
 
 // put obj outside so that it will not be regenerate everytime the js rerendered
 const containerStyle = {
@@ -11,8 +13,21 @@ const starContainerStyle = {
   display: "flex",
 };
 
+//WOW we also have obj and bool
+StarRating.propTypes = {
+  //   maxRating: PropTypes.number.isRequired,
+  maxRating: PropTypes.number,
+  defaultRating: PropTypes.number,
+  color: PropTypes.string,
+  size: PropTypes.number,
+  messages: PropTypes.array,
+  className: PropTypes.string,
+  onSetRating: PropTypes.func,
+};
+
+//???用const 会有先后问题
 //set default
-const StarRating = ({
+export default function StarRating({
   maxRating = 5,
   color = "#fcc419",
   size = 48,
@@ -20,13 +35,13 @@ const StarRating = ({
   messages = [],
   defaultRating = 0,
   onSetRating,
-}) => {
+}) {
   const [rate, setRate] = useState(defaultRating);
   const [tempRate, setTempRate] = useState(0);
 
   const handleRate = (rate) => {
     setRate(rate);
-    onSetRating(rate);
+    onSetRating && onSetRating(rate);
   };
 
   const textStyle = {
@@ -58,7 +73,7 @@ const StarRating = ({
       </p>
     </div>
   );
-};
+}
 
 const Star = ({ onRate, full, onHoverIn, onHoverOut, color, size }) => {
   const starStyle = {
@@ -103,5 +118,3 @@ const Star = ({ onRate, full, onHoverIn, onHoverOut, color, size }) => {
     </span>
   );
 };
-
-export default StarRating;
