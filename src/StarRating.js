@@ -19,12 +19,14 @@ const StarRating = ({
   className = "",
   messages = [],
   defaultRating = 0,
+  onSetRating,
 }) => {
   const [rate, setRate] = useState(defaultRating);
   const [tempRate, setTempRate] = useState(0);
 
   const handleRate = (rate) => {
     setRate(rate);
+    onSetRating(rate);
   };
 
   const textStyle = {
