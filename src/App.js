@@ -62,6 +62,8 @@ export default function App() {
         <NumResult movies={movies} />
       </NavBar>
       <Main>
+        {/* <Box element={<MovieList movies={movies} />} /> */}
+
         <Box>
           <MovieList movies={movies} />
         </Box>
