@@ -57,6 +57,7 @@ const average = (arr) =>
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const query = "interstellar";
 
   // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
@@ -78,6 +79,7 @@ export default function App() {
 
   // Using an async Function
   useEffect(function () {
+    setIsLoading(true);
     async function fetchMovie() {
       const res = await fetch(
         `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
@@ -87,8 +89,10 @@ export default function App() {
 
       // Setting state is asynchronous
       // After the state has been set here in this line of code, or actually after we instructed React to set the state,that doesn't mean that this happens immediately.
-      console.log(movies); // []
-      console.log(data.Search);
+      // console.log(movies); // []
+      // console.log(data.Search);
+
+      setIsLoading(false);
     }
     fetchMovie();
   }, []);
@@ -102,9 +106,7 @@ export default function App() {
       </NavBar>
       <Main>
         {/* <Box element={<MovieList movies={movies} />} /> SAME*/}
-        <Box>
-          <MovieList movies={movies} />
-        </Box>
+        <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box>
         <Box>
           <Summary watched={watched} />
           <WatchedMoviesList watched={watched} />
@@ -274,4 +276,8 @@ const WatchedMovie = ({ movie }) => {
       </div>
     </li>
   );
+};
+
+const Loader = () => {
+  return <div className="loader">Loading...</div>;
 };
