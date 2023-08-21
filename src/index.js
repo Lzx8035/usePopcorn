@@ -1,12 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
 
-// import "./index.css";
-
-// import App from "./App";
+// import React, { useState } from "react";
 // import StarRating from "./StarRating";
-
-import Practise from "./Practise";
+// import Practise from "./Practise";
 
 // const Test = () => {
 //   const [movieRating, setMovieRating] = useState(0);
@@ -33,8 +32,8 @@ root.render(
 
     {/* <Test /> */}
 
-    {/* <App /> */}
+    <App />
 
-    <Practise />
+    {/* <Practise /> */}
   </React.StrictMode>
 );

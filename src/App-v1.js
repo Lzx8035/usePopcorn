@@ -1,8 +1,4 @@
-// he idea here is to fetch some movie data as soon as the app component here mounts for the very first time, so as soon as it has its initial render.
-
 import { useState } from "react";
-
-const KEY = "a6db8c6a";
 
 const tempMovieData = [
   {
@@ -55,18 +51,8 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
-
-  // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
-  //   .then((res) => res.json())
-  //   .then((data) => setMovies(data.Search)); // running infinite NONO
-
-  // the reason is that setting the state here in the render logic will then immediately cause the component to re-render itself again.
-
-  // setWatched([]) // too many renders NONO
-
-  // TO FIX THIS => useEffect Hook FIXED
+  const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
 
   return (
     <>
