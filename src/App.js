@@ -1,6 +1,6 @@
 // he idea here is to fetch some movie data as soon as the app component here mounts for the very first time, so as soon as it has its initial render.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const KEY = "a6db8c6a";
 
@@ -57,6 +57,7 @@ const average = (arr) =>
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const query = "interstellar";
 
   // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
   //   .then((res) => res.json())
@@ -67,6 +68,30 @@ export default function App() {
   // setWatched([]) // too many renders NONO
 
   // TO FIX THIS => useEffect Hook FIXED
+  // Put the side effect inside
+  // RUN only first mount
+  // useEffect(function () {
+  //   fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
+  //     .then((res) => res.json())
+  //     .then((data) => setMovies(data.Search));
+  // }, []);
+
+  // Using an async Function
+  useEffect(function () {
+    async function fetchMovie() {
+      const res = await fetch(
+        `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+      );
+      const data = await res.json();
+      setMovies(data.Search);
+
+      // Setting state is asynchronous
+      // After the state has been set here in this line of code, or actually after we instructed React to set the state,that doesn't mean that this happens immediately.
+      console.log(movies); // []
+      console.log(data.Search);
+    }
+    fetchMovie();
+  }, []);
 
   return (
     <>
