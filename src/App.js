@@ -58,7 +58,8 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const query = "interstellar";
+  const [error, setError] = useState("");
+  const query = "jujutsu 0";
 
   // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
   //   .then((res) => res.json())
@@ -79,20 +80,33 @@ export default function App() {
 
   // Using an async Function
   useEffect(function () {
-    setIsLoading(true);
     async function fetchMovie() {
-      const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
-      );
-      const data = await res.json();
-      setMovies(data.Search);
+      try {
+        setIsLoading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+        );
+        if (!res.ok)
+          throw new Error("Something went wrong with fetch movies 🤪");
 
-      // Setting state is asynchronous
-      // After the state has been set here in this line of code, or actually after we instructed React to set the state,that doesn't mean that this happens immediately.
-      // console.log(movies); // []
-      // console.log(data.Search);
+        const data = await res.json();
+        if (data.Response === "False") throw new Error("Movie not found 🥲");
 
-      setIsLoading(false);
+        setMovies(data.Search);
+
+        // console.log(data);
+
+        // Setting state is asynchronous
+        // After the state has been set here in this line of code, or actually after we instructed React to set the state,that doesn't mean that this happens immediately.
+        // console.log(movies); // []
+        // console.log(data.Search);
+      } catch (err) {
+        // console.log(err);
+        setError(err.message);
+      } finally {
+        //WOW
+        setIsLoading(false);
+      }
     }
     fetchMovie();
   }, []);
@@ -106,7 +120,15 @@ export default function App() {
       </NavBar>
       <Main>
         {/* <Box element={<MovieList movies={movies} />} /> SAME*/}
-        <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box>
+        <Box>
+          {isLoading ? (
+            <Loader />
+          ) : error ? (
+            <ErrorMessage message={error} />
+          ) : (
+            <MovieList movies={movies} />
+          )}
+        </Box>
         <Box>
           <Summary watched={watched} />
           <WatchedMoviesList watched={watched} />
@@ -279,5 +301,14 @@ const WatchedMovie = ({ movie }) => {
 };
 
 const Loader = () => {
-  return <div className="loader">Loading...</div>;
+  return <p className="loader">Loading...</p>;
+};
+
+const ErrorMessage = ({ message }) => {
+  return (
+    <p className="error">
+      <span>❌</span>
+      {message}
+    </p>
+  );
 };
