@@ -62,7 +62,17 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  // const tempQuery = "jujutsu 0";
+  const [selectedId, setSelectedId] = useState(null);
+
+  // which is in the component that owns the state, we write some event handler functions that we then pass down to some child component to update the state in the parent.
+  const handleSelectMovie = (id) => {
+    // setSelectedId(selectedId === id ? null : id); //NONO
+    setSelectedId((selectedId) => (selectedId === id ? null : id));
+  };
+
+  const handleCloseMovie = () => {
+    setSelectedId(null);
+  };
 
   /*
   useEffect(function () {
@@ -119,8 +129,8 @@ export default function App() {
 
           setMovies(data.Search);
 
+          ////////////////////////////////////////////////////////////////////////////
           // console.log(data);
-
           // Setting state is asynchronous
           // After the state has been set here in this line of code, or actually after we instructed React to set the state,that doesn't mean that this happens immediately.
           // console.log(movies); // []
@@ -160,12 +170,21 @@ export default function App() {
           ) : error ? (
             <ErrorMessage message={error} />
           ) : (
-            <MovieList movies={movies} />
+            <MovieList movies={movies} OnSelectMovie={handleSelectMovie} />
           )}
         </Box>
         <Box>
-          <Summary watched={watched} />
-          <WatchedMoviesList watched={watched} />
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              onCloseMovie={handleCloseMovie}
+            />
+          ) : (
+            <>
+              <Summary watched={watched} />
+              <WatchedMoviesList watched={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>
@@ -224,19 +243,24 @@ const Box = ({ children }) => {
   );
 };
 
-const MovieList = ({ movies }) => {
+const MovieList = ({ movies, OnSelectMovie }) => {
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} />
+        <Movie movie={movie} key={movie.imdbID} OnSelectMovie={OnSelectMovie} />
       ))}
     </ul>
   );
 };
 
-const Movie = ({ movie }) => {
+const Movie = ({ movie, OnSelectMovie }) => {
   return (
-    <li>
+    <li
+      onClick={() => {
+        //WOW
+        OnSelectMovie(movie.imdbID);
+      }}
+    >
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -270,6 +294,17 @@ const Movie = ({ movie }) => {
 //     </div>
 //   );
 // };
+
+const MovieDetails = ({ selectedId, onCloseMovie }) => {
+  return (
+    <div className="details">
+      <button className="btn-back" onClick={onCloseMovie}>
+        &larr;
+      </button>
+      {selectedId}
+    </div>
+  );
+};
 
 const Summary = ({ watched }) => {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
