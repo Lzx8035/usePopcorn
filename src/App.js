@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 const KEY = "a6db8c6a";
 
+/*
 const tempMovieData = [
   {
     imdbID: "tt1375666",
@@ -50,16 +51,37 @@ const tempWatchedData = [
     userRating: 9,
   },
 ];
+*/
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
+  const [query, setQuery] = useState("coco");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const query = "jujutsu 0";
+  // const tempQuery = "jujutsu 0";
+
+  /*
+  useEffect(function () {
+    console.log("after initial render");
+  }, []);
+
+  useEffect(function () {
+    console.log("after every render");
+  });
+
+  useEffect(
+    function () {
+      console.log("D");
+    },
+    [query]
+  );
+
+  console.log("During render");
+  */
 
   // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
   //   .then((res) => res.json())
@@ -79,43 +101,55 @@ export default function App() {
   // }, []);
 
   // Using an async Function
-  useEffect(function () {
-    async function fetchMovie() {
-      try {
-        setIsLoading(true);
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
-        );
-        if (!res.ok)
-          throw new Error("Something went wrong with fetch movies 🤪");
+  useEffect(
+    function () {
+      async function fetchMovie() {
+        try {
+          setIsLoading(true);
+          setError("");
 
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie not found 🥲");
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          );
+          if (!res.ok)
+            throw new Error("Something went wrong with fetch movies 🤪");
 
-        setMovies(data.Search);
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("Movie not found 🥲");
 
-        // console.log(data);
+          setMovies(data.Search);
 
-        // Setting state is asynchronous
-        // After the state has been set here in this line of code, or actually after we instructed React to set the state,that doesn't mean that this happens immediately.
-        // console.log(movies); // []
-        // console.log(data.Search);
-      } catch (err) {
-        // console.log(err);
-        setError(err.message);
-      } finally {
-        //WOW
-        setIsLoading(false);
+          // console.log(data);
+
+          // Setting state is asynchronous
+          // After the state has been set here in this line of code, or actually after we instructed React to set the state,that doesn't mean that this happens immediately.
+          // console.log(movies); // []
+          // console.log(data.Search);
+        } catch (err) {
+          console.error(err.message);
+          setError(err.message);
+        } finally {
+          //WOW
+          setIsLoading(false);
+        }
       }
-    }
-    fetchMovie();
-  }, []);
+
+      if (query.length < 3) {
+        setError("");
+        setMovies([]);
+        return;
+      }
+
+      fetchMovie();
+    },
+    [query]
+  );
 
   return (
     <>
       <NavBar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResult movies={movies} />
       </NavBar>
       <Main>
@@ -151,8 +185,8 @@ const Logo = () => {
   );
 };
 
-const Search = () => {
-  const [query, setQuery] = useState("");
+const Search = ({ query, setQuery }) => {
+  // const [query, setQuery] = useState("");
   return (
     <input
       className="search"
