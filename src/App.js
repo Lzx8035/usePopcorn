@@ -124,7 +124,7 @@ export default function App() {
   // Using an async Function
   useEffect(
     function () {
-      const controller = new AbortController();
+      // const controller = new AbortController();
 
       async function fetchMovie() {
         try {
@@ -132,8 +132,8 @@ export default function App() {
           setError("");
 
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-            { signal: controller.signal }
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            // { signal: controller.signal }
           );
           if (!res.ok)
             throw new Error("Something went wrong with fetch movies 🤪");
@@ -165,11 +165,15 @@ export default function App() {
         return;
       }
 
-      fetchMovie();
+      // fetchMovie();
 
-      return function () {
-        controller.abort();
-      };
+      // return function () {
+      //   controller.abort();
+      // };
+
+      const timer = setTimeout(fetchMovie, 500);
+      // Clean up function
+      return () => clearTimeout(timer);
     },
     [query]
   );
