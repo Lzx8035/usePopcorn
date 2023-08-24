@@ -335,6 +335,8 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
     Genre: genre,
   } = movie;
 
+  console.log(title);
+
   const handleAdd = () => {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -363,6 +365,14 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
       getMovieDetails();
     },
     [selectedId] // like an event listener
+  );
+
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${title}`;
+    },
+    [title]
   );
 
   return (
@@ -429,7 +439,7 @@ const Summary = ({ watched }) => {
   const avgUserRating = average(
     watched.map((movie) => movie.userRating)
   ).toFixed(2);
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  const avgRuntime = average(watched.map((movie) => movie.runtime)).toFixed(2);
 
   return (
     <div className="summary">
