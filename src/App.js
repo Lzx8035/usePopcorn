@@ -371,6 +371,10 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
     function () {
       if (!title) return;
       document.title = `Movie | ${title}`;
+      // when press btn, the conponent unmounted so the clean fn of the effect will get excuted
+      return function () {
+        document.title = "UsePopcorn";
+      };
     },
     [title]
   );
