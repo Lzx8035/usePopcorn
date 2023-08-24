@@ -59,7 +59,7 @@ const average = (arr) =>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 export default function App() {
-  const [query, setQuery] = useState("coco");
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -104,6 +104,15 @@ export default function App() {
   console.log("During render");
   */
 
+  /////////////////////////////////////////////////////////////////////////////////
+  // useEffect(function () {
+  //   document.addEventListener("keydown", function (e) {
+  //     if (e.code === "Escape") handleCloseMovie();
+  //     console.log("pressed");
+  //   });
+  // }, []);
+
+  /////////////////////////////////////////////////////////////////////////////////
   // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
   //   .then((res) => res.json())
   //   .then((data) => setMovies(data.Search)); // running infinite NONO
@@ -142,7 +151,7 @@ export default function App() {
           if (data.Response === "False") throw new Error("Movie not found 🥲");
 
           setMovies(data.Search);
-          setError("");
+          // setError("");
 
           ////////////////////////////////////////////////////////////////////////////
           // console.log(data);
@@ -171,7 +180,9 @@ export default function App() {
       //   controller.abort();
       // };
 
-      const timer = setTimeout(fetchMovie, 500);
+      // Deboucing WOW
+      handleCloseMovie(); //BUG
+      const timer = setTimeout(fetchMovie, 800);
       // Clean up function
       return () => clearTimeout(timer);
     },
@@ -347,8 +358,6 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
     Genre: genre,
   } = movie;
 
-  console.log(title);
-
   const handleAdd = () => {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -390,6 +399,16 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
     },
     [title]
   );
+
+  // add tons of eventlisteners // use arror fn
+  useEffect(() => {
+    const EscEvent = (e) => {
+      if (e.code === "Escape") onCloseMovie();
+      console.log("pressed");
+    };
+    document.addEventListener("keydown", EscEvent);
+    return () => document.removeEventListener("keydown", EscEvent);
+  }, [onCloseMovie]);
 
   return (
     <div className="details">
