@@ -12,10 +12,19 @@ const average = (arr) =>
 export default function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+
+  // const [watched, setWatched] = useState([]);
+  // no argument / pure function
+  // just at mount(initial render)
+  const [watched, setWatched] = useState(() =>
+    //WOW
+    JSON.parse(localStorage.getItem("watched"))
+  );
+  // useState( JSON.parse(localStorage.getItem("watched"))) this will call this fn evert render
+  // NONO cuz we are calling a funtion but not passing the function in
 
   const handleSelectMovie = (id) => {
     setSelectedId((selectedId) => (selectedId === id ? null : id));
@@ -27,12 +36,18 @@ export default function App() {
 
   const handleAddWatched = (movie) => {
     setWatched((watched) => [...watched, movie]);
-    // handleCloseMovie(); //
+    handleCloseMovie();
+    // 1) WOW but not very good
+    // localStorage.setItem("watched", JSON.stringify([...watched, movie])); // async
   };
 
   const handleDeleteWatched = (id) => {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   };
+
+  useEffect(() => {
+    localStorage.setItem("watched", JSON.stringify(watched)); //WOW
+  }, [watched]);
 
   useEffect(
     function () {
@@ -230,20 +245,7 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
     Genre: genre,
   } = movie;
 
-  // if (imdbRating > 8) return <p>Greatest ever!</p>;
-  // if (imdbRating > 8) [isTop, setIsTop] = useState(true);
-
-  // const [isTop, setIsTop] = useState(imdbRating > 8)
-  // console.log (isTop)
-  // useEffect (
-  // function () {
-  // setIsTop (imdbRating > 8);
-  // }, [imdbRating])
-
-  // const isTop = imdbRating > 8;
-  // console.log(isTop);
-
-  const [avgRating, setAvgRating] = useState(0);
+  // const [avgRating, setAvgRating] = useState(0);
 
   const handleAdd = () => {
     const newWatchedMovie = {
@@ -258,10 +260,10 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
 
     onAddWatched(newWatchedMovie);
 
-    setAvgRating(Number(imdbRating));
-    // alert(avgRating); // get 0 because the state is set asynchronously here NONO
-    // setAvgRating((avgRating + userRating) / 2); // get 5 ((0+10)/2)
-    setAvgRating((avgRating) => (avgRating + userRating) / 2); // solved by passing in a callback function
+    // setAvgRating(Number(imdbRating));
+    // // alert(avgRating); // get 0 because the state is set asynchronously here NONO
+    // // setAvgRating((avgRating + userRating) / 2); // get 5 ((0+10)/2)
+    // setAvgRating((avgRating) => (avgRating + userRating) / 2); // solved by passing in a callback function
   };
 
   useEffect(
@@ -324,7 +326,7 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
             </div>
           </header>
 
-          <p>{avgRating}</p>
+          {/* <p>{avgRating}</p> */}
 
           <section>
             <div className="rating">
