@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 
 // TODO add sorting
@@ -154,7 +154,30 @@ const Logo = () => {
 };
 
 const Search = ({ query, setQuery }) => {
-  // const [query, setQuery] = useState("");
+  // NOT good, React not happy, use useRef instead NONO dangerous with dependancy
+  // useEffect(() => {
+  //   const el = document.querySelector(".search");
+  //   el.focus();
+  // }, []);
+
+  const inputEl = useRef(null);
+  // useEffect(() => {
+  //   inputEl.current.focus(); //WOW
+  // }, []);
+  // we need to use an effect in order to use a ref that contains a DOM element like this one because the Ref only gets added to this DOM element here after the DOM has already loaded, therefore we can only access it in useEffect which also runs after the DOM has been loaded.
+  useEffect(() => {
+    const enterEvent = (e) => {
+      if (document.activeElement === inputEl.current) return;
+
+      if (e.code === "Enter") {
+        inputEl.current.focus(); //WOW
+        setQuery("");
+      }
+    };
+    document.addEventListener("keydown", enterEvent);
+    return () => document.removeEventListener("keydown", enterEvent);
+  }, [setQuery]);
+
   return (
     <input
       className="search"
@@ -162,6 +185,7 @@ const Search = ({ query, setQuery }) => {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl} //WOW
     />
   );
 };
@@ -298,7 +322,7 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
       if (e.code === "Escape") onCloseMovie();
       console.log("pressed");
     };
-    document.addEventListener("keydown", EscEvent);
+    document.addEventListener("keydown", EscEvent); //WOW
     return () => document.removeEventListener("keydown", EscEvent);
   }, [onCloseMovie]);
 
